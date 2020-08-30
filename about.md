@@ -4,12 +4,12 @@ title: About
 permalink: /about/
 ---
 
-Some information about you!
+Go by the name Wakester! Network Engineer turned Cyber Security analyst that seems to be interested in everything tech. Using this space as a scratchpad for my thoughts, ideas and to showcase some of my work. 
 
 ### More Information
 
-A place to include any other types of information that you'd like to include about yourself.
+A little background on me. Graduated from university back in 2019 with a degree in Network Engineering. Had full intentions of breaking into the network automation space but somehow fell into a Cyber Security role, which has since become my new-found passion!
+I am currently focusing a lot of my learning on malware analysis and blue team tactics, but I occasionally dabble in CTFs / Red Team topics. I am starting this blog to supplement my learning and just act as a place to post about cool technology topics. 
 
-### Contact me
+Hope you enjoy the content! 
 
-[email@domain.com](mailto:email@domain.com)
