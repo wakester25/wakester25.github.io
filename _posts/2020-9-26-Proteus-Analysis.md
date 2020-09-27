@@ -10,6 +10,9 @@ Today we are going to be diving in to some basic static and dynamic analysis on 
 The live sample I am using was sourced from a repository known as the malware DB aka “The Zoo”. Disclaimer, everything on malwareDB is live and for research purposes only, so be careful with any files you grab there. It's good practice to use an environment that is dedicated for malware analysis and separated from your host system. This ensures that when handling malware you don’t accidentally infect any critical/sensitive systems. Here is a quick overview of my current lab environment:
 
 # Lab Environment: 
+
+<img src="{{ site.baseurl }}/images/proteus_basic/lab.PNG">
+
   * Windows 10 Static Analysis VM running FLARE (nothing executed here)
   * Windows XP “Infected” machine
   * Ubuntu “Sniffer” machine spoofing web services via Inetsim
