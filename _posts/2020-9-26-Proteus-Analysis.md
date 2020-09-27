@@ -7,7 +7,7 @@ title: Basic Analysis - Proteus
 
 Today we are going to be diving in to some basic static and dynamic analysis on a live sample of malware. This is my first time doing something like this so I am super excited! The malware strain I chose to analyze is known as Proteus. Proteus was a botnet discovered back in 2016 that offered capabilities such as crypto mining, keylogging and credential theft. The goal of today's analysis is to extract some basic indicators of compromise (IOC) that could be used to profile this malware strain. In another post I plan to perform a deeper analysis to figure out the overall functionality of Proteus. 
 
-The live sample I am using was sourced from a repository known as the malware DB aka “The Zoo”. Disclaimer, everything on malwareDB is live and for research purposes only, so be careful with any files you grab there. It's good practice to use an environment that is dedicated for malware analysis and separated from your host system. This ensures that when handling malware you don’t accidentally infect any critical/sensitive systems. Here is a quick overview of my current lab environment:
+The live sample I am using was sourced from a repository known as the malware DB aka “The Zoo”. Disclaimer, everything on malwareDB is live and for research purposes only, so be careful with any files you grab from there. It's good practice to use an environment that is dedicated for malware analysis and separated from your host system. This ensures that when handling malware you don’t accidentally infect any critical/sensitive systems. Here is a quick overview of my current lab environment:
 
 # Lab Environment: 
 
@@ -61,14 +61,14 @@ The next logical step in analyzing this malware is to perform some basic dynamic
 
 For reference here is a quick summary of the tools being used for analysis:
 
-__Inetsim__ = simulates common protocols such as FTP, HTTP, NTP, ect
-__Wireshark__ = used to capture network traffic from the infected VM
-__RegShot__ = take snapshots of the registry and compares them for changes
-__Procmon__ = allows you to analyze what a process does (file wirtes, reg changes, ect)
-__ProcessExplorer__ = gives you a view of all processes running (like a more indepth version of task manager)
-__Autoruns__ = used to see if a malicious file set executables to run on startup
+  * __Inetsim__ = simulates common protocols such as FTP, HTTP, NTP, ect
+  * __Wireshark__ = used to capture network traffic from the infected VM
+  * __RegShot__ = take snapshots of the registry and compares them for changes
+  * __Procmon__ = allows you to analyze what a process does (file wirtes, reg changes, ect)
+  * __ProcessExplorer__ = gives you a view of all processes running (like a more indepth version of task manager)
+  * __Autoruns__ = used to see if a malicious file set executables to run on startup
 
-After double clicking the application and launching it, immediately the original .exe disappears and you are met with a screen stating *“There was an error with chrome”* and giving you the options to either “send a report” or *“close”*. No matter which option you choose the application respawns with the GUI component which always overlays any other applications you have open.
+After double clicking the application and launching it, immediately the original .exe disappears and you are met with a screen stating *“There was an error with chrome”* and giving you the options to either *“send a report”* or *“close”*. No matter which option you choose the application respawns with the GUI component which always overlays any other applications you have open.
 
 <img src="{{ site.baseurl }}/images/proteus_basic/error_report.PNG">
 
@@ -76,9 +76,9 @@ During the initial launch I was watching process explorer to see what processes 
 
 <img src="{{ site.baseurl }}/images/proteus_basic/process_spawn.PNG">
 
-Pivoting frome here I decided to take a look in ProcMon to see what different actions Proteus takes on the machine. I set the filters to include only file writes, registry writes and network calls for the gchrome, chrome and DW20 processes. While this application performed a ton of actions on the host, some items were interesting to note. The first item I noticed was that a document “new text document.txt” was dropped into *\Application Data\\*. The contents of this file was a single string containing the hash of the program. I am guessing this might have to do with a check to see if another instance of the application has already run, but I am not really sure. The next interesting item I found was that DW20.EXE was created in the folder *C:Program Files\Common Files\Microsoft Shared\DW\\*. Also existing here were a number of DLLs. Quickly looking at the executable, it seems this is the main executable that is dropped onto the machine which performs the core functions for the malware as there are a large number of imports present. Lastly there is a chrome.exe application dropped into *C:\Users\admin\AppData\Roaming*. 
+Pivoting frome here I decided to take a look in ProcMon to see what different actions Proteus takes on the machine. I set the filters to include only file writes, registry writes and network calls for the gchrome, chrome and DW20 processes. While this application performed a ton of actions on the host, some items were interesting to note. The first item I noticed was that a document __“new text document.txt”__ was dropped into __\Application Data\\__. The contents of this file was a single string containing the hash of the program. I am guessing this might have to do with a check to see if another instance of the application has already run, but I am not really sure. The next interesting item I found was that DW20.EXE was created in the folder __C:Program Files\Common Files\Microsoft Shared\DW\\__. Also existing here were a number of DLLs. Quickly looking at the executable, it seems this is the main executable that is dropped onto the machine which performs the core functions for the malware as there are a large number of imports present. Lastly there is a chrome.exe application dropped into __C:\Users\admin\AppData\Roaming__. 
 
-Moving over to registry items, a lot of registry writes were performed by Proteus making it tough to sort out what was garbage and what was not. The most interesting item that I found was *C:\Users\admin\AppData\Roaming\chrome.exe* being written to key *HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run*. This is used as a persistence mechanism to ensure that the application runs on startup. 
+Moving over to registry items, a lot of registry writes were performed by Proteus making it tough to sort out what was garbage and what was not. The most interesting item that I found was __C:\Users\admin\AppData\Roaming\chrome.exe__ being written to key __HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run__. This is used as a persistence mechanism to ensure that the application runs on startup. 
 
 Switching gears, the next place I decided to look was on the sniffer VM to see what network traffic was captured in Wireshark. The first two items where DNS queries out to the domain __proteus-network[.]ml__. OSINT on this domain shows that it is no longer active. The rest of the items captures were repeated GET requests to the domain followed by POSTS requests to __/api/register__ with the JSON contents of __{"m":"\\x43\\x68\\x39\\x39\\x6C\\x69\\x5D\\x3B\\x63\\x6C\\x49\\x1F\\x22\\x79\\x77\\x34\\x36\\x13\\x62\\x45\\x35\\x07", "o":"\\x43\\x40\\x36\\x7E\\x73\\x72\\x41\\x11\\x29\\x5A\\x17\\x1B\\x02\\x28", "v":"\\x3C\\x67\\x36\\x52\\x61\\x0B\\x4C\\x03\\x79\\x54"}__. 
 
