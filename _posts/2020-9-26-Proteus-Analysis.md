@@ -71,7 +71,7 @@ After double clicking the application and launching it, immediately the original
 
 During the initial launch I was watching process explorer to see what processes the executable would spawn. On execution, gchrome is replaced with a __chrome.exe__ process which in turn spawns a child process __DW20.EXE__, which is run with the command line arguments __-x -s 508__. If you click any of the prompts in the GUI component, a new instance of chrome.exe is spawned. 
 
-<img src="{{ site.baseurl }}/images/proteus_basic/process_spawn.png">
+<img src="../images/proteus_basic/process_spawn.png">
 
 Pivoting frome here I decided to take a look in ProcMon to see what different actions Proteus takes on the machine. I set the filters to include only file writes, registry writes and network calls for the gchrome, chrome and DW20 processes. While this application performed a ton of actions on the host, some items were interesting to note. The first item I noticed was that a document “new text document.txt” was dropped into *\Application Data\\*. The contents of this file was a single string containing the hash of the program. I am guessing this might have to do with a check to see if another instance of the application has already run, but I am not really sure. The next interesting item I found was that DW20.EXE was created in the folder *C:Program Files\Common Files\Microsoft Shared\DW\\*. Also existing here were a number of DLLs. Quickly looking at the executable, it seems this is the main executable that is dropped onto the machine which performs the core functions for the malware as there are a large number of imports present. Lastly there is a chrome.exe application dropped into *C:\Users\admin\AppData\Roaming*. 
 
@@ -79,7 +79,7 @@ Moving over to registry items, a lot of registry writes were performed by Proteu
 
 Switching gears, the next place I decided to look was on the sniffer VM to see what network traffic was captured in Wireshark. The first two items where DNS queries out to the domain __proteus-network[.]ml__. OSINT on this domain shows that it is no longer active. The rest of the items captures were repeated GET requests to the domain followed by POSTS requests to __/api/register__ with the JSON contents of __{"m":"\\x43\\x68\\x39\\x39\\x6C\\x69\\x5D\\x3B\\x63\\x6C\\x49\\x1F\\x22\\x79\\x77\\x34\\x36\\x13\\x62\\x45\\x35\\x07", "o":"\\x43\\x40\\x36\\x7E\\x73\\x72\\x41\\x11\\x29\\x5A\\x17\\x1B\\x02\\x28", "v":"\\x3C\\x67\\x36\\x52\\x61\\x0B\\x4C\\x03\\x79\\x54"}__. 
 
-<img src="{{ site.baseurl }}/images/proteus_basic/network_capture_1.png">
+<img src="{{ site.baseurl }}/images/proteus_basic/network_capture_1.png">   
 
 <img src="{{ site.baseurl }}/images/proteus_basic/network_capture_2.png">
 
