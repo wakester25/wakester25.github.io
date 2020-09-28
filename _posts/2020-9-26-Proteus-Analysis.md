@@ -29,7 +29,7 @@ I immediately dropped the file into 010 hex editor to verify the PE executable f
 
 After all of that basic verification, I then decided to fire up PEStudio to see if I could extract more information from the file. PEStudio is one of my favorite tools for static analysis as it lets you check the imports, exports, PE Header sections, ect of a file. The first place I looked was the section view to check the raw size vs the virtual size of the file. If a file's virtual size is bigger than its raw size it can indicate some sort of compression or packer is in use. In this case however, both the virtual and raw sizes were relatively the same, meaning nothing is compressed. I then switched over to the imports / exports pane. Looking at the functions an application imports / exports can give you a quick fly by view of what the program might do on execution (ex: writes to files, perform networking functions, ect). Unfortunately, little information was given here. No exports were present and the executable only seems to import functions from mscore.dll. However, looking at the MSDN  mscore.dll is associated with .NET, indicating that this application was most likely developed using the .NET framework. 
 
-The next logical place to look after the imports section is to switch over to the strings view in PEStudio to see if we can extract anything interesting. Parsing through all the garbage I was able to find some hard coded IP addresses, CryptoGraphic functions and what looks like possible commands for a C2. Here are the actual strings that were found"
+The next logical place to look after the imports section is to switch over to the strings view in PEStudio to see if we can extract anything interesting. Parsing through all the garbage I was able to find some hard coded IP addresses, CryptoGraphic functions and what looks like possible commands for a C2. Here are the actual strings that were found:
 
   * 10.0.0[.]0
   * 4.0.0[.]0
@@ -48,7 +48,7 @@ Outside of tossing the executable into a decompiler, we have  exhausted what can
 
 # Dynamic Analysis:
 
-The next logical step in analyzing this malware is to perform some basic dynamic analysis. This is going to involve executing the malware on a virtual machine to capture network traffic, registry changes, file changes,  ect.processes, We are going to use a single Windows XP machine connected to a Ubuntu machine spoofing common protocols to perform our analysis. The first thing that needs to be done before we can perform any sort of dynamic analysis to ensure our environment is set up correctly. Here are the following steps I performed before executing the sample:
+The next logical step in analyzing this malware is to perform some basic dynamic analysis. This is going to involve executing the malware on a virtual machine to capture network traffic, registry changes, file changes, ect. We are going to use a single Windows XP machine connected to a Ubuntu machine spoofing common protocols to perform our analysis. The first thing that needs to be done before we can perform any sort of dynamic analysis to ensure our environment is set up correctly. Here are the following steps I performed before executing the sample:
 
   * Copy over our executable to the Windows XP VM
   * Turn off share clipboard and drag/drop 
