@@ -68,7 +68,7 @@ For reference here is a quick summary of the tools being used for analysis:
   * __ProcessExplorer__ = gives you a view of all processes running (like a more indepth version of task manager)
   * __Autoruns__ = used to see if a malicious file set executables to run on startup
 
-After double clicking the application and launching it, immediately the original .exe disappears and you are met with a screen stating *“There was an error with chrome”* and giving you the options to either *“send a report”* or *“close”*. No matter which option you choose the application respawns with the GUI component which always overlays any other applications you have open.
+After double clicking the application and launching it, immediately the original .exe disappears and you are met with a screen stating *“There was an error with chrome”* and giving you the options to either *“send a report”* or *“don't send”*. No matter which option you choose the application respawns with the GUI component which always overlays any other applications you have open.
 
 <img src="{{ site.baseurl }}/images/proteus_basic/error_report.PNG">
 
