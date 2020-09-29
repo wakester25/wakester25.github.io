@@ -40,6 +40,7 @@ The next logical place to look after the imports section is to switch over to th
 
 Outside of tossing the executable into a decompiler, we have  exhausted what can be done with basic static analysis. Unfortunately debugging a program is a time consuming process, so I am going to save that for another post. We were however able to extract some valuable information about the program. Here is a quick summary of our findings thus far:
 
+  * gchrome.exe File Hash : 49FD4020BF4D7BD23956EA892E6860E9
   * A single PE executable disguised as google chrome is dropped onto the machine
   * This executable is not packed
   * Compile time was on 11/21/2016
@@ -102,3 +103,15 @@ While I am not exactly sure what these JSON contents represent, it seems that th
 
 
 So while I didn’t figure out too much about the overall functionality of the application during this analysis, some interesting items were still able to be extracted from the sample. I could probably spend more time analyzing the files dropped and registry items changed, however I didn’t find it worth it as I reached my goal of extracting some basic IOCs.  I plan on doing a deeper dive into this sample in my next post where I actually go in and try and figure out the overall functionality of the malware. I feel like this will be an awesome learning experience. For now though, I am content with my findings. I hope you enjoyed this post and learned as much as I did throughout the process! Until next time all!
+
+
+## IOC's
+
+  * proteus-network[.]ml
+  * 49FD4020BF4D7BD23956EA892E6860E9
+  * DW20.EXE
+  * gchrome.exe
+  * C:\Users\admin\Documents\New text document.txt
+  * C:\Users\admin\AppData\Roaming\Tamir.SharpSsh.dll
+  * C:Program Files\Common Files\Microsoft Shared\DW\
+  * HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run, value=C:\Users\admin\AppData\Roaming\chrome.exe
