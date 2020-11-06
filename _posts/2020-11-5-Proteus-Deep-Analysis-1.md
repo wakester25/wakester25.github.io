@@ -32,7 +32,7 @@ So if we recall my last post we left off with running the malware in a VM to see
  
  In my first attempt at bypassing this obfuscation was to try and manually step through the code to see if I could decode what was going on. I quickly learned that due to the amount of code and obfuscation this was not going to be possible. I then turned to my trusty friend google and learned that .NET / C# obfuscation are commonly used techniques and there a number of tools to both obfuscate / deobfuscate .NET such as de4dot. After multiple attempts, none of the tools I tried were able to detect the obfuscator being used.
 
- ### de4dot unable to detect obfucation
+ ### De4dot unable to detect obfuscation
  
 <img src="{{ site.baseurl }}/images/proteus_deep_one/undected_obfuscator.PNG">
  
