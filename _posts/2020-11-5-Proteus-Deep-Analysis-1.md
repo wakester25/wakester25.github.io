@@ -18,15 +18,21 @@ So if we recall my last post we left off with running the malware in a VM to see
    * C:Program Files\Common Files\Microsoft Shared\DW\
    * HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run, value=C:\Users\admin\AppData\Roaming\chrome.exe
 
- While these IOCs prove useful as a detection mechanism we still have gained very little insight into the actual functionality of the malware. To learn more about how the malware operates we will be digging in and attempting to disassemble the executable. For those who don’t know, disassembly is the process of taking an executable and getting back code that can then be analyzed. When code is initially compiled it is turned into instructions that can be executed by the processor. Disassembly is the art of taking these instructions and representing them at a higher level assembly language that is considered more human readable. The tool of choice to do this is IDA Pro, which will take a passed executable, disassemble it and present us with the ASM code. However, in passing gchrome.exe into IDA I actually hit my first hurdle. In attempting to open the executable in IDA I kept receiving errors about “processor type cli not included”. 
+ While these IOCs prove useful as a detection mechanism we still have gained very little insight into the actual functionality of the malware. To learn more about how the malware operates we will be digging in and attempting to disassemble the executable. For those who don’t know, disassembly is the process of taking an executable and getting back code that can then be analyzed. When code is initially compiled it is turned into instructions that can be executed by the processor. Disassembly is the art of taking these instructions and representing them at a higher level assembly language that is considered more human readable. The tool of choice to do this is IDA Pro, which will take a passed executable, disassemble it and present us with the ASM code. However, in passing gchrome.exe into IDA I actually hit my first hurdle. In attempting to open the executable in IDA I kept receiving errors about “processor type cli not included”.
+
+ ### ghcrome.exe IDA Import Error  
  
 <img src="{{ site.baseurl }}/images/proteus_deep_one/ida_error.PNG">
  
  This was really confusing to me as I had assumed this assembly was crafted for the x86 processor type? Well, long story short I wasn’t wrong, but I had assumed some incorrect things about the executable. If we remember from my last post we had discovered gchrome.exe was a .NET / C# application, which is a programming framework I have little experience with. After multiple tutorials on .NET / C#, I learned that while .NET applications may seem like a normal PE executable, it is actually a representation of something known as an “intermediate language”. The short and dirty explanation is that .NET uses a just in time compilation architecture, which means that code is transformed into an “intermediate language” which is then further compiled at run time using JIT compilation. This means that we can’t use typical disassembly tactics used for normal x86 executables and instead have to use methods specific to .NET. The good news is this intermediate language is consistent and we can rather easily get something back that closely resembles the original source code. Cool right! To actually solve this problem and disassemble the application I ended up using a tool known as dnSpy. dnSpy is pretty much a disassembler and debugger that was built specifically for .NET applications. Using this I was able to get back extracted C# classes / namespaces from the application. In doing this however all I found that all the code was heavily obfuscated. 
+
+ ### Extracted Obfuscated Code 
  
 <img src="{{ site.baseurl }}/images/proteus_deep_one/obfuscated_code.PNG">
  
- In my first attempt at bypassing this obfuscation was to try and manually step through the code to see if I could decode what was going on. I quickly learned that due to the amount of code and obfuscation this was not going to be possible. I then turned to my trusty friend google and learned that .NET / C# obfuscation are commonly used techniques and there a number of tools to both obfuscate / deobfuscate .NET such as de4dot. After multiple attempts, none of the tools I tried were able to detect the obfuscator being used. 
+ In my first attempt at bypassing this obfuscation was to try and manually step through the code to see if I could decode what was going on. I quickly learned that due to the amount of code and obfuscation this was not going to be possible. I then turned to my trusty friend google and learned that .NET / C# obfuscation are commonly used techniques and there a number of tools to both obfuscate / deobfuscate .NET such as de4dot. After multiple attempts, none of the tools I tried were able to detect the obfuscator being used.
+
+ ### de4dot unable to detect obfucation
  
 <img src="{{ site.baseurl }}/images/proteus_deep_one/undected_obfuscator.PNG">
  
@@ -34,9 +40,11 @@ So if we recall my last post we left off with running the malware in a VM to see
 
 So back to Proteus. After running the malware on my VM and using .NET Generic Unpacker, multiple DLL / EXE files were extracted. Tossing these files into dnSpy I was able to find that the malware was actually composed of three .NET components:
 
-    → ProtuesHTTPBotnetC.exe 
-    → Tamir.SharSsh.dll 
-    → cvbfdbs.dll 
+   * ProtuesHTTPBotnetC.exe 
+   * Tamir.SharSsh.dll 
+   * cvbfdbs.dll 
+
+### .NET Generic Unpacker and the unpacked files
  
 <img src="{{ site.baseurl }}/images/proteus_deep_one/generic_unpacker.PNG">
 
@@ -63,8 +71,8 @@ But more on that later. As I am still working on going through each of these fil
 
 # Tools Used:
 
-dnSpy / dotPeek : .NET disassembly / debugging
-IDA Pro : General PE disassembly
-De4dot / .NET Generic Unpacker : .NET deobfuscation
+* __dnSpy / dotPeek__ : .NET disassembly / debugging
+* __IDA Pro__ : General PE disassembly
+* __De4dot / .NET Generic Unpacker__ : .NET deobfuscation
 
 
