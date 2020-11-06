@@ -24,7 +24,7 @@ So if we recall my last post we left off with running the malware in a VM to see
  
 <img src="{{ site.baseurl }}/images/proteus_deep_one/ida_error.PNG">
  
- This was really confusing to me as I had assumed this assembly was crafted for the x86 processor type? Well, long story short I wasn’t wrong, but I had assumed some incorrect things about the executable. If we remember from my last post we had discovered gchrome.exe was a .NET / C# application, which is a programming framework I have little experience with. After multiple tutorials on .NET / C#, I learned that while .NET applications may seem like a normal PE executable, it is actually a representation of something known as an “intermediate language”. The short and dirty explanation is that .NET uses a just in time compilation architecture, which means that code is transformed into an “intermediate language” which is then further compiled at run time using JIT compilation. This means that we can’t use typical disassembly tactics used for normal x86 executables and instead have to use methods specific to .NET. The good news is this intermediate language is consistent and we can rather easily get something back that closely resembles the original source code. Cool right! To actually solve this problem and disassemble the application I ended up using a tool known as dnSpy. dnSpy is pretty much a disassembler and debugger that was built specifically for .NET applications. Using this I was able to get back extracted C# classes / namespaces from the application. In doing this however all I found that all the code was heavily obfuscated. 
+ This was really confusing to me as I had assumed this assembly was crafted for the x86 processor type? Well, long story short I wasn’t wrong, but I had assumed some incorrect things about the executable. If we remember from my last post we had discovered gchrome.exe was a .NET / C# application, which is a programming framework I have little experience with. After multiple tutorials on .NET / C#, I learned that while .NET applications may seem like a normal PE executable, it is actually a representation of something known as an “intermediate language”. The short and dirty explanation is that .NET uses a just in time compilation architecture, which means that code is transformed into an “intermediate language” which is then further compiled at run time. This means that we can’t use typical disassembly tactics used for normal x86 executables and instead have to use methods specific to .NET. The good news is this intermediate language is consistent and we can rather easily get something back that closely resembles the original source code. Cool right! To actually solve this problem and disassemble the application I ended up using a tool known as dnSpy. dnSpy is pretty much a disassembler and debugger that was built specifically for .NET applications. Using this I was able to get back extracted C# classes / namespaces from the application. In doing this however I found that all the code was heavily obfuscated. 
 
 ### Extracted Obfuscated Code 
  
@@ -38,7 +38,7 @@ So if we recall my last post we left off with running the malware in a VM to see
  
  At this point a few weeks had passed and I was about to just toss in the towel when I stumbled upon another technique for unpacking code, dumping from memory. Conveniently one of the developers of IDA, Erik Pistelli, actually created a tool to do this known as .NET Generic Unpacker. How this works is the unpacker program waits for the obfuscated wrapper application to decrypt the source .NET code and extract it leaving you with the source MISL code. From here you can then use dnSpy or dotPeek to disassemble it into the true unobfuscated C# code.
 
-So back to Proteus. After running the malware on my VM and using .NET Generic Unpacker, multiple DLL / EXE files were extracted. Tossing these files into dnSpy I was able to find that the malware was actually composed of three .NET components:
+After running the malware on my VM and using .NET Generic Unpacker, multiple DLL / EXE files were extracted. Tossing these files into dnSpy I was able to find that the malware was actually composed of three .NET components:
 
    * ProtuesHTTPBotnetC.exe 
    * Tamir.SharSsh.dll 
@@ -52,7 +52,7 @@ So back to Proteus. After running the malware on my VM and using .NET Generic Un
 
 Both ProtuesHTTPBotnetC.exe and Tamir.SharSsh.dll seemed to be unobfuscated and resembled the original source code while cvbfdbs.dll still seems to be further obfuscated. Glossing over the files I was able to find functions for CryptoMining, Connection Proxying and even a function that tests harvested accounts against a number of services (Amazon, Netflix, ect). 
 
-### Extracted functions and the account checker function found  
+### Disassembled code / The account checker function  
 
 <img src="{{ site.baseurl }}/images/proteus_deep_one/unpacked_functions.PNG">
 
