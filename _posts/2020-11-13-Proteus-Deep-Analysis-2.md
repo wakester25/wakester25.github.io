@@ -30,7 +30,7 @@ Each of these functions are started as individual threads. There is a main funct
 
 <img src="{{ site.baseurl }}/images/proteus_deep_two/fingerprint.PNG">
 
-One other interesting item that I found within the program was that it used a custom XOR function to store strings. This is so that anyone performing basic static analysis can’t look at the strings stored within the program. However simply stepping through the function manually I was able to deconstruct that the strings stored were simply the parameters needed to register the botnet (URL, user agent, POST commands, ect) and other uniquely identifying commands.
+One other interesting item that I found within the program was that it used a custom XOR function to store strings. This is so that anyone performing basic static analysis can’t look at the strings stored within the program. However simply stepping through the function manually I was able to deconstruct that the strings stored were the parameters needed to register the botnet (URL, user agent, POST commands, ect) and other uniquely identifying commands.
 
 ## XOR function and encrypted strings
 
